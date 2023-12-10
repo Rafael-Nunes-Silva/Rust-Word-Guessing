@@ -29,7 +29,7 @@ fn read_words_file(file_path: &str) -> Result<Vec<String>, io::Error> {
         .split("\n")
         .filter_map(|s| {
             if s.len() > 0 {
-                return Some(String::from(s.trim()));
+                return Some(String::from(s.trim()).to_lowercase());
             }
             None
         })
@@ -114,12 +114,15 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     let mut mistakes: u32 = 0;
 
     loop {
+        // shows the word and the guessed letters to the user
+        show_word(&random_word, &guessed_letters);
+        
         // checks wether the user still has chances left
         if mistakes >= MAX_MISTAKES {
             println!("You lost\nYou have used all your chances.");
             break;
         } else {
-            println!("You still have {} chances", (MAX_MISTAKES - mistakes));
+            println!("You have {} chances", (MAX_MISTAKES - mistakes));
         }
 
         let mut guess = String::new();
@@ -129,7 +132,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
         io::stdin().read_line(&mut guess)?;
 
         // trims the input
-        guess = String::from(guess.trim());
+        guess = String::from(guess.trim()).to_lowercase();
 
         // handle the user's guess
         if let Ok(guess_return) = handle_guess(&guess, &random_word) {
@@ -161,9 +164,6 @@ pub fn run() -> Result<(), Box<dyn Error>> {
                 }
             }
         }
-
-        // shows the word and the guessed letters to the user
-        show_word(&random_word, &guessed_letters);
     }
 
     // reveals the secret word
