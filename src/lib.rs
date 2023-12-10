@@ -9,7 +9,7 @@ enum GuessReturn<'a> {
     WordRight(&'a str),
     WordWrong(&'a str),
     LetterRight(char),
-    LetterWrong(char),
+    LetterWrong(char)
 }
 
 fn get_words_file_path() -> String {
@@ -43,7 +43,7 @@ fn choose_random_word<'a>(words: &'a Vec<String>) -> Result<&'a str, &'static st
         return Err("There must be at least 1 word in the file");
     }
     
-    let rand_index = rand::thread_rng().gen_range(1..=words.len());
+    let rand_index = rand::thread_rng().gen_range(0..words.len());
     if let Some(word) = words.get(rand_index) {
         return Ok(word);
     }
@@ -97,6 +97,16 @@ fn show_word(word: &str, guessed_letters: &Vec<char>) {
     println!("{output}\n");
 }
 
+fn check_guessed_words(word: &str, guessed_letters: &Vec<char>) -> bool {
+    for c in word.chars() {
+        if !guessed_letters.contains(&c) {
+            return false;
+        }
+    }
+
+    true
+}
+
 pub fn run() -> Result<(), Box<dyn Error>> {
     // gets the path to the file storing the words from the arguments environment arguments
     let words_file_path = get_words_file_path();
@@ -116,6 +126,12 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     loop {
         // shows the word and the guessed letters to the user
         show_word(&random_word, &guessed_letters);
+
+        // checks wether all letters of the word have been guessed
+        if check_guessed_words(&random_word, &guessed_letters) {
+            println!("You got it!");
+            break;
+        }
 
         // checks wether the user still has chances left
         if mistakes >= MAX_MISTAKES {
