@@ -12,14 +12,14 @@ enum GuessReturn<'a> {
     LetterWrong(char),
 }
 
-fn get_words_file_path() -> Result<String, &'static str> {
+fn get_words_file_path() -> String {
     let args: Vec<String> = std::env::args().collect();
 
     if args.len() < 2 {
-        return Err("Not enough arguments");
+        return String::from("words.txt");
     }
 
-    Ok(args[1].clone())
+    args[1].clone()
 }
 
 fn read_words_file(file_path: &str) -> Result<Vec<String>, io::Error> {
@@ -99,7 +99,7 @@ fn show_word(word: &str, guessed_letters: &Vec<char>) {
 
 pub fn run() -> Result<(), Box<dyn Error>> {
     // gets the path to the file storing the words from the arguments environment arguments
-    let words_file_path = get_words_file_path()?;
+    let words_file_path = get_words_file_path();
 
     // open a file with words separated by new lines
     let words_in_file = read_words_file(&words_file_path)?;
@@ -116,7 +116,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     loop {
         // shows the word and the guessed letters to the user
         show_word(&random_word, &guessed_letters);
-        
+
         // checks wether the user still has chances left
         if mistakes >= MAX_MISTAKES {
             println!("You lost\nYou have used all your chances.");
